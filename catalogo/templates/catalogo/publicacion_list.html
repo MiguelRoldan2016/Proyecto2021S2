@@ -1,0 +1,21 @@
+{% extends "base_gen.html" %}
+
+{% block content %}
+<h1>Lista de Publicaciones</h1>
+
+{% if publicacion_list %}
+<ul>
+
+    {% for pub in publicacion_list %}
+    <li>
+        <a href="{{ pub.get_absolute_url }}">{{ pub.titulo }}</a> (<a
+            href="{{ pub.autor.get_absolute_url }}">{{ pub.autor }}</a>)
+    </li>
+    {% endfor %}
+
+</ul>
+
+{% else %}
+<p>No hay publicaciones almacenadas.</p>
+{% endif %}
+{% endblock %}

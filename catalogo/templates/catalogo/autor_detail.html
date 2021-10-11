@@ -1,0 +1,25 @@
+{% extends "base_gen.html" %}
+
+{% block content %}
+
+<h1>Autor: {{ autor }}</h1>
+
+{% if autor.fecha_nacimiento %}
+<p><strong>Fecha de Nacimiento:</strong> {{ autor.fecha_nacimiento }} </p>
+{% endif %}
+{% if autor.fecha_muerte %}
+<p><strong>Fecha de Muerte:</strong> {{ autor.fecha_muerte }} </p>
+{% endif %}
+
+<div style="margin-left:20px;margin-top:20px">
+    <h4>Publicaciones</h4>
+
+    <dl>
+        {% for pub in autor.publicacion_set.all %}
+        <dt><a href="{% url 'publicacion-detail' pub.pk %}">{{ pub }}</a> ({{ pub.ejemplar_set.all.count }} ejemplares)
+        </dt>
+        <dd>{{ pub.descripcion }}</dd>
+        {% endfor %}
+    </dl>
+</div>
+{% endblock %}

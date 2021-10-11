@@ -1,0 +1,25 @@
+{% block sidebar %}
+<ul class="sidebar-nav">
+    {% if user.is_authenticated %}
+    <li><a href="{% url 'index' %}">Inicio</a></li>
+    <li><a href="{% url 'publicaciones' %}">Publicaciones</a></li>
+    <li><a href="{% url 'autores' %}">Autores</a></li>
+
+    <hr />
+    <li>Usuario<br>{{ user.get_username }}</li>
+    <li><a href="{% url 'mis-prestamos' %}">Mis prestamos</a></li>
+    <li><a href="{% url 'logout' %}">Logout</a></li>
+    {% else %}
+    <li><a href="{% url 'login' %}">Login</a></li>
+    {% endif %}
+
+    <hr />
+    {% if user.is_staff %}
+    <li>Bibliotecarios</li>
+    {% if perms.puede_ver_prestamos %}
+    <li><a href="{% url 'prestamos' %}">Todos los prestamos</a></li>
+    {% endif %}
+    {% endif %}
+
+</ul>
+{% endblock sidebar %}

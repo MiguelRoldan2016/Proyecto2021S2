@@ -1,0 +1,20 @@
+{% extends "base_gen.html" %}
+
+{% block content %}
+
+<h1>Ejemplares prestados</h1>
+
+{% if ejemplar_list %}
+<ul>
+    {% for ejemplar in ejemplar_list %}
+    <li class="{% if ejemplar.ya_vencido %}text-danger{% endif %}">
+        <a href="{% url 'publicacion-detail' ejemplar.publicacion.pk %} ">{{ ejemplar.publicacion.titulo }} </a>
+        (Vencimiento {{ ejemplar.fecha_vencimiento }})
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No tengo prestamos.</p>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends 'base_gen.html' %}
+
+{% block title %}Control de Biblioteca - Inicio{% endblock title %}
+
+{% block content %}
+<h1>Biblioteca Local</h1>
+<p>Sitio de manejo de biblioteca para el curso de Proyectos de Computacion Aplicados a la Ingenieria Electronica</p>
+
+<p>La biblioteca cuenta con estos conteos:</p>
+<ul>
+    <li><strong>Publicaciones: </strong>{{ cantidad_publicaciones }} </li>
+    <li><strong>Ejemplares: </strong>{{ cantidad_ejemplares }} </li>
+    <li><strong>Ejemplares disponibles: </strong>{{ cantidad_ejemplares_disponibles }} </li>
+    <li><strong>Autores: </strong>{{ cantidad_autores }} </li>
+    <li><strong>Visitas al sitio: </strong>{{ cantidad_visitas }} </li>
+</ul>
+{% endblock content %}
+
+{% block pagination %}
+{% if is_paginated %}
+<div class="pagination">
+    <span class="page-links">
+        {% if page_obj.has_previous %}
+        <a href="{{ request.path }}?page={{ page_obj.previous_page_number }}">anterior</a>
+        {% endif %}
+        <span class="page-current">
+            Pagina {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}.
+        </span>
+        {% if page_obj.has_next %}
+        <a href="{{ request.path }}?page={{ page_obj.next_page_number }}">siguiente</a>
+        {% endif %}
+    </span>
+</div>
+{% endif %}
+{% endblock pagination %}

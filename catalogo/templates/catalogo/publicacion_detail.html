@@ -1,0 +1,30 @@
+{% extends "base_gen.html" %}
+
+{% block content %}
+
+<h1>Titulo: {{ publicacion.titulo }}</h1>
+
+<p><strong>Autor:</strong> <a href="{{ publicacion.autor.get_absolute_url }}">{{ publicacion.autor }}</a></p>
+<p><strong>Descripcion:</strong> {{ publicacion.descripcion }}</p>
+<p><strong>ISBN:</strong> {{ publicacion.isbn }}</p>
+<p><strong>Idioma:</strong> {{ publicacion.idioma }}</p>
+<p><strong>Genero:</strong> {{ publicacion.genero.all|join:", " }}</p>
+
+<div style="margin-left:20px;margin-top:20px">
+    <h4>Ejemplares</h4>
+
+    {% for copia in publicacion.ejemplar_set.all %}
+    <hr>
+    <p class="
+        {% if copia.disponibilidad == 'd' %}text-success
+        {% elif copia.disponibilidad in 'mx' %}text-danger
+        {% else %}text-warning
+        {% endif %}">{{ copia.get_disponibilidad_display }}</p>
+    {% if copia.disponibilidad != 'd' %}<p><strong>Vencimiento del prestamo:</strong> {{copia.fecha_vencimiento}}</p>
+    {% endif %}
+    <p><strong>Detalles de impresion:</strong> {{copia.impresion}}</p>
+    <p class="text-muted"><strong>Id:</strong> {{copia.id}}</p>
+
+    {% endfor %}
+</div>
+{% endblock %}

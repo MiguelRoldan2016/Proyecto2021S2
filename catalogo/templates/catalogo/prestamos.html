@@ -1,0 +1,37 @@
+{% extends "base_gen.html" %}
+
+{% block content %}
+
+<h1>Todos los Prestamos</h1>
+
+{% if ejemplar_list %}
+<table>
+    <tr>
+        <th>Vencimiento</th>
+        <th>Titulo</th>
+        <th>Usuario</th>
+        <th>Renovar</th>
+    </tr>
+
+    {% for ejemplar in ejemplar_list %}
+    <tr>
+        <td class="{% if ejemplar.ya_vencido %}text-danger{% endif %}">
+            {{ ejemplar.fecha_vencimiento }}</td>
+
+        <td>
+            <a href="{% url 'publicacion-detail' ejemplar.publicacion.pk %} ">{{ ejemplar.publicacion.titulo }} </a>
+        </td>
+
+        <td>{{ ejemplar.prestado_a.get_full_name }}</td>
+
+        <td><a href="{% url 'renovar-prestamo' ejemplar.id %}">
+                Renovar</a></td>
+        {% endfor %}
+    </tr>
+
+</table>
+{% else %}
+<p>No tengo prestamos.</p>
+{% endif %}
+
+{% endblock %}
