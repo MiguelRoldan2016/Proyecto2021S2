@@ -88,11 +88,12 @@ WSGI_APPLICATION = 'biblioteca.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'biblioteca',
-        'USER': 'miguelRoldan',
-        'PASSWORD': 'miguel',
-        'HOST': '127.0.0.1',
+#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'juanch0',
+        'HOST': 'db',
         'PORT': '5432'
     }
 }
@@ -176,3 +177,5 @@ LOGOUT_REDIRECT_URL = '/'
 
 SIMPLE_HISTORY_REVERT_DISABLED = True
 SIMPLE_HISTORY_HISTORY_CHANGE_REASON_USE_TEXT_FIELD = True
+
+VARIABLE_DE_PRUEBA = ""
