@@ -135,5 +135,10 @@ dmypy.json
 .pytype/
 
 # Cython debug symbols
+data/
 cython_debug/
+staticfiles/admin/
+staticfiles/django_extensions/
+old.docker-compose.yml
 catalogo/static/favicon.ico:Zone.Identifier
+docker-compose.yml

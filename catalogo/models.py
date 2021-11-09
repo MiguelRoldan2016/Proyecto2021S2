@@ -5,8 +5,10 @@ from django.db import models
 from datetime import date
 import uuid
 
-from simple_history.models import HistoricalRecords
 from django.contrib.auth import get_user_model
+from simple_history.models import HistoricalRecords
+from biblioteca.storage_backends import PublicMediaStorage
+
 
 User = get_user_model()
 
@@ -71,7 +73,8 @@ class Autor(models.Model):
     apellidos = models.CharField(max_length=100)
     fecha_nacimiento = models.DateField(null=True, blank=True)
     fecha_muerte = models.DateField(null=True, blank=True)
-    imagen = models.ImageField(upload_to=settings.PUBLICACIONES_PICS,
+    imagen = models.ImageField(storage=PublicMediaStorage(),
+                               upload_to=settings.AUTORES_PICS,
                                default=settings.STATIC_URL+'default.png')
     history = HistoricalRecords(bases=[IPAddressHistoricalModel, ])
 
@@ -81,6 +84,9 @@ class Autor(models.Model):
         ordering = ['apellidos', 'nombres']
 
     def __str__(self):
+        return f'{self.apellidos}, {self.nombres}'
+
+    def __unicode__(self):
         return f'{self.apellidos}, {self.nombres}'
 
     def get_absolute_url(self):
@@ -101,8 +107,9 @@ class Publicacion(models.Model):
     idioma = models.ForeignKey(Idioma, on_delete=models.SET_NULL, null=True)
     tipo = models.ManyToManyField(Tipo,
                                   help_text='Elija el tipo de publicacion')
-    imagen = models.ImageField(upload_to=settings.PUBLICACIONES_PICS,
-                               default=settings.STATIC_URL+'default.png')
+    imagen = models.ImageField(storage=PublicMediaStorage(),
+                               upload_to=settings.PUBLICACIONES_PICS,
+                               default='default.png')
     history = HistoricalRecords(bases=[IPAddressHistoricalModel, ])
 
     class Meta:
@@ -110,6 +117,9 @@ class Publicacion(models.Model):
         verbose_name_plural = ("Publicaciones")
 
     def __str__(self):
+        return self.titulo
+
+    def __unicode__(self):
         return self.titulo
 
     def get_absolute_url(self):
@@ -129,6 +139,7 @@ class Ejemplar(models.Model):
     publicacion = models.ForeignKey(Publicacion,
                                     on_delete=models.RESTRICT, null=True)
     impresion = models.CharField(max_length=200)
+    fecha_inicio = models.DateField(null=True, blank=True)
     fecha_vencimiento = models.DateField(null=True, blank=True)
     prestado_a = models.ForeignKey(User,
                                    on_delete=SET_NULL,
@@ -158,10 +169,10 @@ class Ejemplar(models.Model):
         verbose_name = ("Ejemplar")
         verbose_name_plural = ("Ejemplares")
         ordering = ['fecha_vencimiento']
-        permissions = (("puede_marcar_devolucion",
-                       "Aplicar devolucion de Ejemplar"),
-                       ("puede_ver_prestamos",
-                       "Ver todos los prestamos"),
+        permissions = (("puede_marcar_devolucion", "Aplicar devolucion de Ejemplar"),
+                       ("puede_aprobar_prestamos", "Aprobar prestamos"),
+                       ("puede_solicitar_prestamos", "Solicitar prestamos"),
+                       ("puede_ver_prestamos", "Ver todos los prestamos"),
                        )
 
     def __str__(self):
@@ -175,5 +186,12 @@ class Ejemplar(models.Model):
     @property
     def ya_vencido(self):
         if self.fecha_vencimiento and date.today() > self.fecha_vencimiento:
+            return True
+        return False
+
+    @property
+    def disponible(self):
+        if self.disponibilidad == 'd' or (
+                self.disponibilidad == 'r' and date.today() > self.fecha_inicio+date.timedelta(days=1)):
             return True
         return False

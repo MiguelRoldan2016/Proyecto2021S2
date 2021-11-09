@@ -10,6 +10,9 @@
 {% if autor.fecha_muerte %}
 <p><strong>Fecha de Muerte:</strong> {{ autor.fecha_muerte }} </p>
 {% endif %}
+<div class="detail-pic">
+    <img src="{{ autor.imagen.url }}" alt="{{ autor.imagen.url }}" width="300">
+</div>
 
 <div style="margin-left:20px;margin-top:20px">
     <h4>Publicaciones</h4>

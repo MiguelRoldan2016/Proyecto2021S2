@@ -1,0 +1,16 @@
+{% extends "base_gen.html" %}
+
+{% block content %}
+<h1>Reservar: {{ ejemplar.publicacion.titulo }}</h1>
+<p>Prestado a: {{ ejemplar.prestado_a }}</p>
+<p {% if ejemplar.disponible %} class="text-danger" {% endif %}>
+    Fecha de vencimiento: {{ ejemplar.fecha_vencimiento }}</p>
+
+<p>Detalles del ejemplar: {{ ejemplar.impresion }} </p>
+
+<form action="" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Reservar">
+</form>
+{% endblock content %}

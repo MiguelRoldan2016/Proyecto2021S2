@@ -2,12 +2,14 @@ from django.db import models
 from django.conf import settings
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
-
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
     PermissionsMixin
 )
+
+from biblioteca.storage_backends import PublicMediaStorage
+# , path_and_rename
 
 
 class UserManager(BaseUserManager, models.Manager):
@@ -66,8 +68,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     nombres = models.CharField(max_length=100, default="nombres")
     apellidos = models.CharField(max_length=100, default="apellidos")
     edad = models.PositiveIntegerField(default=0)
-    foto = models.ImageField(upload_to=settings.USER_PROFILE_PICS,
-                             default=settings.STATIC_URL+'default.png')
+    foto = models.ImageField(storage=PublicMediaStorage(),
+                             upload_to=settings.USER_PROFILE_PICS,
+                             default='default.png')
 
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)

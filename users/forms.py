@@ -2,9 +2,19 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import ReadOnlyPasswordHashField, UserCreationForm
 
-from .models import User
+from biblioteca.utils import detect_face
+
+# from .models import User
 
 User = get_user_model()
+
+
+class NewLoginForm(forms.Form):
+    """user login form"""
+    email = forms.EmailField()
+    password = forms.CharField(widget=forms.PasswordInput())
+    fotoData = forms.CharField(widget=forms.TextInput(),
+                               required=False)
 
 
 class RegisterForm(UserCreationForm):
@@ -12,9 +22,9 @@ class RegisterForm(UserCreationForm):
     email = forms.EmailField(max_length=254,
                              help_text="Correo electronico",
                              )
-    password1 = forms.CharField(label="Contrasena",
+    password1 = forms.CharField(label="Contraseña",
                                 widget=forms.PasswordInput)
-    password2 = forms.CharField(label="Confirmar contrasena",
+    password2 = forms.CharField(label="Confirmar contraseña",
                                 widget=forms.PasswordInput)
     nombres = forms.CharField(max_length=100,
                               initial="",
@@ -27,11 +37,16 @@ class RegisterForm(UserCreationForm):
                                     'placeholder': 'Apellido(s) del usuario'
                                 }))
     edad = forms.IntegerField(initial=None)
+    foto = forms.ImageField()
+    fotoData = forms.CharField(label="",
+                               widget=forms.HiddenInput(),
+                               required=False)
 
     class Meta:
         model = User
         fields = ['email', 'password1', 'password2',
-                  'nombres', 'apellidos', 'edad']
+                  'nombres', 'apellidos', 'edad',
+                  'foto', 'fotoData']
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
@@ -40,12 +55,25 @@ class RegisterForm(UserCreationForm):
             raise forms.ValidationError("Esta direccion de correo ya existe")
         return email
 
+    def clean_foto(self):
+        foto = ""
+        return foto
+
+    def clean_fotoData(self):
+        fotoData = detect_face(self.cleaned_data.get('fotoData'))
+        if fotoData is None:
+            raise forms.ValidationError("No se detectó ninguna cara. \
+                                        Por favor capture una imagen.")
+
+        return fotoData
+
     def clean(self):
         cleaned_data = super().clean()
         password = cleaned_data.get('password1')
         password2 = cleaned_data.get('password2')
         if password is not None and password != password2:
             self.add_error('password2', "Las contrasenas no coinciden")
+
         return cleaned_data
 
 

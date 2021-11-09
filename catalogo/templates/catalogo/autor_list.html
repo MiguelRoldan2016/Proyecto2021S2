@@ -4,15 +4,17 @@
 <h1>Lista de Autores</h1>
 
 {% if autor_list %}
-<ul>
-
+<table>
     {% for autor in autor_list %}
-    <li>
-        <a href="{{ autor.get_absolute_url }}">{{ autor }}</a>
-    </li>
+    <tr>
+        <td>&bull;</td>
+        <td><a href="{{ autor.get_absolute_url }}">{{ autor }}</a></td>
+        {% if perms.puede_crear_autor %}
+        <td>(<a href="{{ autor.get_absolute_url }}/editar">Editar</a>)</td>
+        {% endif %}
+    </tr>
     {% endfor %}
-
-</ul>
+</table>
 
 {% else %}
 <p>No hay autores almacenados.</p>

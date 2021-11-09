@@ -1,5 +1,10 @@
 {% extends "base_gen.html" %}
 
+{%block page_specific_js %}
+{% load static %}
+<script src="{% static 'js/capture.js' %}"></script>
+{% endblock page_specific_js %}
+
 {% block content %}
 
 {% if form.errors %}
@@ -16,16 +21,31 @@
 
 <form method="post" action="{% url 'login' %}">
     {% csrf_token %}
-    <table>
+    {{ form.as_p }}
+    {% comment %} <table>
+        {% for field in form %}
         <tr>
-            <td>{{ form.username.label_tag }}</td>
-            <td>{{ form.username }}</td>
+            <td>{{ field.label_tag }} {{ field }}</td>
         </tr>
+        {% endfor %}
         <tr>
-            <td>{{ form.password.label_tag }}</td>
-            <td>{{ form.password }}</td>
+            <td>
+                <label for="id_foto_data">foto_data:</label>
+                <input type="hidden" name="fotoData" id="fotoData" value="">
+            </td>
         </tr>
     </table>
+    <p><input type="text" name="fotoData" id="id_fotoData" value=""></p>
+    {% endcomment %}
+    <div class="camera">
+        <video id="video">Cámara no disponible.</video>
+        <button id="startbutton">Capturar imagen</button>
+    </div>
+    <canvas id="canvas">
+    </canvas>
+    <div class="output">
+        <img id="photo" alt="Imagen capturada.">
+    </div>
     <input type="submit" value="login" />
     <input type="hidden" name="next" value="{{ next }}" />
 </form>

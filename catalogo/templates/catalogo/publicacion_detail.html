@@ -9,6 +9,11 @@
 <p><strong>ISBN:</strong> {{ publicacion.isbn }}</p>
 <p><strong>Idioma:</strong> {{ publicacion.idioma }}</p>
 <p><strong>Genero:</strong> {{ publicacion.genero.all|join:", " }}</p>
+<div class="detail-pic">
+    <img src="{{ publicacion.imagen.url }}" alt="{{ publicacion }}" width="300">
+</div>
+{% comment %}
+{% endcomment %}
 
 <div style="margin-left:20px;margin-top:20px">
     <h4>Ejemplares</h4>
@@ -16,11 +21,15 @@
     {% for copia in publicacion.ejemplar_set.all %}
     <hr>
     <p class="
-        {% if copia.disponibilidad == 'd' %}text-success
+        {% if copia.disponible %}text-success
         {% elif copia.disponibilidad in 'mx' %}text-danger
         {% else %}text-warning
-        {% endif %}">{{ copia.get_disponibilidad_display }}</p>
-    {% if copia.disponibilidad != 'd' %}<p><strong>Vencimiento del prestamo:</strong> {{copia.fecha_vencimiento}}</p>
+        {% endif %}">{{ copia.get_disponibilidad_display }}
+        {% if copia.disponible and perms.puede_ver_prestamos %}
+        (<a href="{% url 'reservar-ejemplar' copia.id %}">Reservar</a>)
+        {% endif %}
+    </p>
+    {% if copia.disponibilidad == 'p' %}<p><strong>Vencimiento del prestamo:</strong> {{copia.fecha_vencimiento}}</p>
     {% endif %}
     <p><strong>Detalles de impresion:</strong> {{copia.impresion}}</p>
     <p class="text-muted"><strong>Id:</strong> {{copia.id}}</p>

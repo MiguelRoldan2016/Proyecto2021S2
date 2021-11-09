@@ -18,13 +18,15 @@ class UserAdmin(BaseUserAdmin):
     list_filter = ['is_staff']
     add_fieldsets = (
         (None, {'fields': ('email', 'password', 'password_2')}),
-        ('Datos personales', {'fields': ('nombres', 'apellidos', 'edad')}),
+        ('Datos personales', {
+         'fields': ('nombres', 'apellidos', 'edad', 'foto')}),
         ('Privilegios', {'fields': ('is_staff', 'is_superuser')}),
         ('Grupos de acceso', {'fields': ('groups', )})
     )
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-        ('Datos personales', {'fields': ('nombres', 'apellidos', 'edad')}),
+        ('Datos personales', {
+         'fields': ('nombres', 'apellidos', 'edad', 'foto')}),
         ('Privilegios', {'fields': ('is_active', 'is_staff', 'is_superuser')}),
         ('Grupos de acceso', {'fields': ('groups', )})
     )

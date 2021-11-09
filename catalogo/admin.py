@@ -29,6 +29,7 @@ class EjemplarAdmin(admin.ModelAdmin):
     list_display = ('mostrar_titulo',
                     'disponibilidad',
                     'prestado_a',
+                    'fecha_inicio',
                     'fecha_vencimiento',
                     'id')
     list_filter = (
@@ -44,7 +45,8 @@ class EjemplarAdmin(admin.ModelAdmin):
         ('Disponibilidad', {
             'fields': ('disponibilidad',
                        'prestado_a',
-                       'fecha_vencimiento')
+                       ('fecha_inicio', 'fecha_vencimiento')
+                       )
         }),
     )
 
@@ -52,6 +54,14 @@ class EjemplarAdmin(admin.ModelAdmin):
 @admin.register(Autor)
 class AutorAdmin(admin.ModelAdmin):
     list_display = ('apellidos', 'nombres', 'fecha_nacimiento', 'fecha_muerte')
-    fields = ['nombres', 'apellidos', ('fecha_nacimiento', 'fecha_muerte')]
+    fieldsets = (
+        (None, {'fields': (
+            'nombres',
+            'apellidos',
+            ('fecha_nacimiento', 'fecha_muerte'),
+            'imagen'
+        )}),
+
+    )
 
     inlines = [PublicacionInline]

@@ -1,13 +1,51 @@
 import datetime
+from django.contrib.auth import authenticate, login
 from django.views import generic
+from django.contrib import messages
 from django.urls import reverse, reverse_lazy
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.views.generic.base import View
+from django.views.generic.edit import FormView
 
-from .forms import RenovarPrestamoModelForm, AutorModelForm
+from .forms import RenovarPrestamoModelForm, AutorModelForm, NewLoginForm, EjemplarModelForm
 from .models import Autor, Ejemplar, Publicacion
+from biblioteca.utils import detect_face
+
+
+class NewLoginView(FormView):
+    form_class = NewLoginForm
+    template_name = 'newlogin.html'
+    success_url = reverse_lazy('index')
+
+    def form_valid(self, form):
+        """ process user login"""
+        credentials = form.cleaned_data
+        self.request.session['fotoData'] = {}
+
+        user = authenticate(request=self.request,
+                            username=credentials['email'],
+                            password=credentials['password'])
+
+        if user is not None:
+            self.request.session['fotoData'] = detect_face(
+                form.cleaned_data['fotoData'])
+            if self.request.session['fotoData'] is None:
+                messages.add_message(self.request, messages.INFO,
+                                     'No se detectó ninguna cara. \
+                                     Por favor capture una imagen')
+                return HttpResponseRedirect(reverse_lazy('newlogin'))
+
+            login(self.request, user)
+            return HttpResponseRedirect(self.success_url)
+
+        else:
+            messages.add_message(self.request, messages.INFO,
+                                 'Credenciales incorrectas. \
+                                 Por favor intente de nuevo')
+            return HttpResponseRedirect(reverse_lazy('newlogin'))
 
 
 def index(request):
@@ -19,6 +57,11 @@ def index(request):
         disponibilidad__exact='d').count()
     cantidad_autores = Autor.objects.count()
 
+    if not request.user.is_authenticated:
+        request.session['fotoData'] = {}
+
+    fotoData = request.session.get('fotoData')
+
     cantidad_visitas = request.session.get('num_visits', 0)
     request.session['num_visits'] = cantidad_visitas+1
 
@@ -28,6 +71,7 @@ def index(request):
         'cantidad_ejemplares_disponibles': cantidad_ejemplares_disponibles,
         'cantidad_autores': cantidad_autores,
         'cantidad_visitas': cantidad_visitas,
+        'fotoData': fotoData,
     }
 
     return render(request, 'index.html', context=context)
@@ -53,12 +97,14 @@ class AutorDetailView(LoginRequiredMixin, generic.DetailView):
     paginate_by = 10
 
 
-class AutorUpdate(LoginRequiredMixin, generic.UpdateView):
+class AutorUpdate(PermissionRequiredMixin, generic.UpdateView):
+    permission_required = 'catalogo.puede_crear_autor'
     model = Autor
     form_class = AutorModelForm
 
 
-class AutorCreate(LoginRequiredMixin, generic.CreateView):
+class AutorCreate(PermissionRequiredMixin, generic.CreateView):
+    permission_required = 'catalogo.puede_crear_autor'
     model = Autor
     form_class = AutorModelForm
 
@@ -70,7 +116,8 @@ class PrestamosPorUsuarioView(LoginRequiredMixin, generic.ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        return Ejemplar.objects.filter(prestado_a=self.request.user).filter(disponibilidad='p').order_by('fecha_vencimiento')
+        return Ejemplar.objects.filter(prestado_a=self.request.user). \
+            filter(disponibilidad='p').order_by('fecha_vencimiento')
 
 
 class PrestamosView(PermissionRequiredMixin, generic.ListView):
@@ -81,7 +128,14 @@ class PrestamosView(PermissionRequiredMixin, generic.ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        return Ejemplar.objects.all().filter(disponibilidad='p').order_by('fecha_vencimiento')
+        return Ejemplar.objects.filter(disponibilidad='p'). \
+            order_by('fecha_vencimiento')
+
+
+class EjemplarDetailView(LoginRequiredMixin, generic.UpdateView):
+    model = Ejemplar
+    template_name = 'catalogo/reservar_ejemplar.html'
+    form_class = EjemplarModelForm
 
 
 @login_required

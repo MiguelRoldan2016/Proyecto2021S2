@@ -8,6 +8,9 @@ urlpatterns = [
          name='publicaciones'),
     path('publicacion/<int:pk>', views.PublicacionDetailView.as_view(),
          name='publicacion-detail'),
+    path('publicacion/<uuid:pk>/reserva/',
+         views.EjemplarDetailView.as_view(),
+         name='reservar-ejemplar'),
     path('publicacion/<uuid:pk>/renovacion/',
          views.renovar_prestamo,
          name='renovar-prestamo'),
@@ -23,5 +26,7 @@ urlpatterns = [
          name='mis-prestamos'),
     path('prestamos/', views.PrestamosView.as_view(),
          name='prestamos'),
+    path('newlogin/', views.NewLoginView.as_view(),
+         name='newlogin'),
 
 ]

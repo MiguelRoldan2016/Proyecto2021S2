@@ -1,23 +1,36 @@
 {% extends "base_gen.html" %}
 
+{%block page_specific_js %}
+{% load static %}
+<script src="{% static 'js/capture.js' %}"></script>
+{% endblock page_specific_js %}
+
 {% block content %}
 <h1>Registro de usuarios</h1>
 
 <form action="" method="post">
     {% csrf_token %}
     {% for field in registration_form %}
-    <p>{{ field.label_tag }}{{ field }}
-
-        {% if field.help_text %} <small style="color:grey">{{ field.help_text }} </small> {% endif %}
-        {% if field.errors %}
-        <ul>
-            {% for error in field.errors %}
-            <li class="text-danger">{{ error }} </li>
-            {% endfor %}
-        </ul>
-        {% endif %}
+    {{ field.label_tag }}{{ field }}
+    {% if field.help_text %} <small style="color:grey">{{ field.help_text }} </small> {% endif %}
+    {% if field.errors %}
+    <ul>
+        {% for error in field.errors %}
+        <li class="text-danger">{{ error }} </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
     </p>
     {% endfor %}
+    <div class="camera">
+        <video id="video">Cámara no disponible.</video>
+        <button id="startbutton">Capturar imagen</button>
+    </div>
+    <canvas id="canvas">
+    </canvas>
+    <div class="output">
+        <img id="photo" alt="Imagen capturada.">
+    </div>
     <input type="submit" value="Aceptar" />
 </form>
 {% endblock content %}

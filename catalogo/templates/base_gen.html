@@ -1,18 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
+{% load static %}
 
 <head>
     <title>{% block title %}Biblioteca Local{% endblock title %}</title>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
-        integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <!-- Bootstrap CSS TEMPLATE -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    {%block page_specific_js %}{% endblock page_specific_js %}
 </head>
+<header>{% block header %}{% endblock header %}</header>
 
 <body>
+    <nav style="background-color:#4f868c!important" class="navbar navbar-expand-lg navbar-dark nav-background bg-dark">
+        <a href="/">
+            <img id="logo" src="{% static 'logo.png' %}" height="30">
+        </a>
+        {% if user.is_authenticated %}{{ user.get_username }}{% endif %}
+        {% comment %} <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/">PROJECTS</a>
+                </li>
+            </ul>
+        </div> {% endcomment %}
+    </nav>
+
     <div class="container-"></div>
     <div class="container-fluid">
         <div class="row">
@@ -20,11 +42,22 @@
                 {% include 'sidebar.html' %}
             </div>
             <div class="col-sm-10 ">
+                {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                    <li {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
                 {% block content %}{% endblock content %}
                 {% block pagination %}{% endblock pagination %}
             </div>
         </div>
     </div>
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
+    </script>
 </body>
 
 </html>
